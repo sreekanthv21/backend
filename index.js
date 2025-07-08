@@ -1,5 +1,6 @@
 const express = require('express');
-const aws = require('aws-sdk');
+
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 require('dotenv').configure()
 
