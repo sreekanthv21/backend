@@ -1,7 +1,7 @@
 const express = require('express');
 
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const {S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const {S3Client, GetObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
 
 const app= express();
@@ -75,6 +75,22 @@ app.get('/get-url',async (req,res)=>{
     
     
 });
+
+app.get('list-filename',async(req,res)=>{
+    const {dir}=req.query;
+    const command=new ListObjectsV2Command({Bucket:'lawtus',Prefix:dir});
+    const list=await s3.send(command);
+
+    const filenamelist=list.map((item)=>{
+        const initial=item.Key;
+        const initiallist=initial.split("/");
+        return initiallist[initiallist.length-1];
+    });
+
+    res.send(filenamelist);
+
+
+})
 
 app.listen(3000,()=>{
     console.log('running');
