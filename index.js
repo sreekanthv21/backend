@@ -82,13 +82,13 @@ app.get('/list-filename',async(req,res)=>{
     const list=await s3.send(command);
     console.log(list.Contents.map(item => item.Key));
 
-    const filenamelist=list.Contents.map((item=>{
-        return item.Key;
-    })).filter((item)=>{
-        return item!==`${dir}/`
-    }).map((item)=>{
-        return item.split('/').pop()
-    })
+    const filenamelist=list.Contents .map(item => item.Key)
+        .filter(item => item !== `${dir}/`)
+        .map(item => {
+            const trimmed = item.slice(dir.length + 1); // remove "dir/"
+            return trimmed.includes('/') ? trimmed.split('/')[0] + '/' : trimmed;
+        })
+        .filter((value, index, self) => self.indexOf(value) === index);
 
     res.send(filenamelist);
 
