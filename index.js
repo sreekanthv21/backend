@@ -98,8 +98,18 @@ app.get('/list-filename',async(req,res)=>{
     });
 
     res.send([...folderlist,...filelist]);
+ 
 
+})
 
+app.get('/getsignedurl',async(req,res)=>{
+    const {dir}=req.query;
+    const url=await getSignedUrl(s3,GetObjectCommand({
+        Bucket:'lawtus',
+        Key:dir
+    }),{expiresIn:2000});
+
+    res.send(url)
 })
 
 app.listen(3000,()=>{
