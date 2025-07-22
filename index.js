@@ -76,9 +76,9 @@ app.get('/get-url',async (req,res)=>{
     
 });
 
-app.get('list-filename',async(req,res)=>{
+app.get('/list-filename',async(req,res)=>{
     const {dir}=req.query;
-    const command=new ListObjectsV2Command({Bucket:'lawtus',Prefix:dir});
+    const command=new ListObjectsV2Command({Bucket:'lawtus',Prefix: `${dir}/` });
     const list=await s3.send(command);
 
     const filenamelist=list.map((item)=>{
