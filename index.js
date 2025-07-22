@@ -104,7 +104,7 @@ app.get('/list-filename',async(req,res)=>{
 
 app.get('/getsignedurl',async(req,res)=>{
     const {dir}=req.query;
-    const url=await getSignedUrl(s3,GetObjectCommand({
+    const url=await getSignedUrl(s3,new GetObjectCommand({
         Bucket:'lawtus',
         Key:dir
     }),{expiresIn:2000});
