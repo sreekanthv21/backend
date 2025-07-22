@@ -85,7 +85,7 @@ app.get('/list-filename',async(req,res)=>{
     const filenamelist=list.Contents.map((item=>{
         return item.Key;
     })).filter((item)=>{
-        return item!==`${dir}`
+        return item!==`${dir}/`
     }).map((item)=>{
         return item.split('/').pop()
     })
