@@ -86,7 +86,7 @@ app.get('/list-filename',async(req,res)=>{
         .filter(item => item !== `${dir}/`)
         .map(item => {
             const trimmed = item.slice(dir.length + 1); // remove "dir/"
-            return trimmed.includes('/') ? trimmed.split('/')[0] : trimmed;
+            return trimmed.includes('/') ? trimmed.split('/')[0] +'/': trimmed;
         })
         .filter((value, index, self) => self.indexOf(value) === index);
 
