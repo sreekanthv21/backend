@@ -81,7 +81,7 @@ app.get('/list-filename',async(req,res)=>{
     const command=new ListObjectsV2Command({Bucket:'lawtus',Prefix: `${dir}/` });
     const list=await s3.send(command);
 
-    const filenamelist=list.map((item)=>{
+    const filenamelist=list.Contents.map((item)=>{
         const initial=item.Key;
         const initiallist=initial.split("/");
         return initiallist[initiallist.length-1];
