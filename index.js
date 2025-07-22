@@ -89,8 +89,15 @@ app.get('/list-filename',async(req,res)=>{
             return trimmed.includes('/') ? trimmed.split('/')[0] +'/': trimmed;
         })
         .filter((value, index, self) => self.indexOf(value) === index);
+    
+    const folderlist=filenamelist.filter((item)=>{
+        return item.endsWith('/')
+    }).map((item)=>item.slice(0,-1));
+    const filelist=filenamelist.filter((item)=>{
+        return item.endsWith('/')===false
+    });
 
-    res.send(filenamelist);
+    res.send([...folderlist,...filelist]);
 
 
 })
