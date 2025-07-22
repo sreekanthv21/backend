@@ -86,6 +86,8 @@ app.get('/list-filename',async(req,res)=>{
         const initial=item.Key;
         const initiallist=initial.split("/");
         return initiallist[initiallist.length-1];
+    }).filter((item)=>{
+        item!=dir
     });
 
     res.send(filenamelist);
