@@ -92,7 +92,7 @@ app.get('/list-filename',async(req,res)=>{
     
     const folderlist=filenamelist.filter((item)=>{
         return item.endsWith('/')
-    }).map((item)=>item.slice(0,-1));
+    })
     const filelist=filenamelist.filter((item)=>{
         return item.endsWith('/')===false
     });
