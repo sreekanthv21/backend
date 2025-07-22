@@ -80,6 +80,7 @@ app.get('/list-filename',async(req,res)=>{
     const {dir}=req.query;
     const command=new ListObjectsV2Command({Bucket:'lawtus',Prefix: `${dir}/` });
     const list=await s3.send(command);
+    console.log(list.Contents.map(item => item.Key));
 
     const filenamelist=list.Contents.map((item)=>{
         const initial=item.Key;
