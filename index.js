@@ -49,7 +49,7 @@ app.get('/get-url',async (req,res)=>{
             if(each.endsWith('.ts')){
                 const eachstream = await getSignedUrl(s3,new GetObjectCommand({
                     Bucket:'lawtus',
-                    Key:dir+each.trim()
+                    Key:dir+'/'+each.trim()
                 }),{expiresIn:500000});
                 return eachstream;
             }
