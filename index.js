@@ -57,8 +57,11 @@ app.get('/get-url',async (req,res)=>{
         }));
 
         res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-        
-        res.setHeader("Access-Control-Allow-Origin", "*"); 
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+         
 
         res.send(reformedm3u8.join('\n'))
 
