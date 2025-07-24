@@ -67,7 +67,7 @@ app.get('/get-url',async (req,res)=>{
 
     }catch(e){
         res.setHeader("Content-Type", "text/plain");
-        res.send(e.message);
+        res.send(`${e.message}`);
         
     }
 
