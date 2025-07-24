@@ -116,6 +116,28 @@ app.get('/getsignedurl',async(req,res)=>{
     res.send(url)
 })
 
+app.get('/proxy', async (req, res) => {
+  const { key } = req.query;
+  if (!key) return res.status(400).send("Missing key");
+
+  try {
+    const command = new GetObjectCommand({
+      Bucket: 'lawtus',
+      Key: key
+    });
+
+    const wasabiRes = await s3.send(command);
+
+    res.setHeader("Content-Type", "video/MP2T");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+
+    wasabiRes.Body.pipe(res);
+  } catch (e) {
+    res.status(500).send("Error: " + e.message);
+  }
+});
+
+
 app.listen(3000,()=>{
     console.log('running');
 })
