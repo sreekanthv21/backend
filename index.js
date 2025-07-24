@@ -57,7 +57,6 @@ app.get('/get-url',async (req,res)=>{
         }));
 
         res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-        res.setHeader("Content-Disposition", 'inline; filename="playlist.m3u8"');
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
         res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
