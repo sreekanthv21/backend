@@ -3,7 +3,7 @@ const cors= require('cors');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {S3Client, GetObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
-
+const fetch = require('node-fetch');
 const app= express();
 app.use(cors());
 
@@ -119,50 +119,49 @@ app.get('/getsignedurl',async(req,res)=>{
 
 
 
-// ✅ M3U8 READER
 app.get('/get-m3u8', async (req, res) => {
-  const { file } = req.query; // e.g., video1/output.m3u8
+  const { file } = req.query;
   if (!file) return res.status(400).send('Missing file param');
 
   try {
-    const signedUrl = s3.getSignedUrl('getObject', {
-      Bucket: 'lawtus',
-      Key: file,
-      Expires: 60,
-    });
+    const command = new GetObjectCommand({ Bucket: bucket, Key: file });
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
 
     const resp = await fetch(signedUrl);
-    const text = await resp.text();
+    if (!resp.ok) {
+      console.error('Failed to fetch m3u8:', resp.statusText);
+      return res.status(500).send('Error fetching m3u8');
+    }
 
+    const text = await resp.text();
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
     res.send(text);
   } catch (err) {
-    console.error(err);
+    console.error('M3U8 Fetch Error:', err);
     res.status(500).send('Error fetching m3u8');
   }
 });
 
-// ✅ TS PROXY
+// 🎯 .TS Proxy Endpoint
 app.get('/proxy', async (req, res) => {
-  const key = req.query.key;
+  const { key } = req.query;
   if (!key) return res.status(400).send('Missing key param');
 
   try {
-    const signedUrl = s3.getSignedUrl('getObject', {
-      Bucket: 'lawtus',
-      Key: key,
-      Expires: 60,
-    });
+    const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
 
     const fileResp = await fetch(signedUrl);
-    if (!fileResp.ok) return res.status(500).send('Error fetching .ts');
+    if (!fileResp.ok) {
+      console.error('Failed to fetch TS file:', fileResp.statusText);
+      return res.status(500).send('Error fetching .ts');
+    }
 
     res.setHeader('Content-Type', fileResp.headers.get('content-type') || 'video/MP2T');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-
     fileResp.body.pipe(res);
   } catch (err) {
-    console.error(err);
+    console.error('TS Proxy Error:', err);
     res.status(500).send('Proxy error');
   }
 });
