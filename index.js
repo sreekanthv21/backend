@@ -116,31 +116,55 @@ app.get('/getsignedurl',async(req,res)=>{
     res.send(url)
 })
 
-app.get('/proxy', async (req, res) => {
-  const { key } = req.query;
-  if (!key) return res.status(400).send('Missing key');
 
-  const wasabiUrl = `https://s3.wasabisys.com/your-bucket/${key}`;
-  const fileStream = await fetch(wasabiUrl); // Auth header if private
 
-  res.setHeader('Content-Type', 'video/mp2t');
-  res.setHeader('Cache-Control', 'public, max-age=3600');
-  fileStream.body.pipe(res);
-});
-
+// ✅ M3U8 READER
 app.get('/get-m3u8', async (req, res) => {
   const { file } = req.query; // e.g., video1/output.m3u8
   if (!file) return res.status(400).send('Missing file param');
 
-  const wasabiUrl = `https://s3.wasabisys.com/your-bucket/${file}`;
-  const resp = await fetch(wasabiUrl, { headers: { 'Authorization': 'Bearer xyz' } }); // or presigned
-  const text = await resp.text();
+  try {
+    const signedUrl = s3.getSignedUrl('getObject', {
+      Bucket: 'lawtus',
+      Key: file,
+      Expires: 60,
+    });
 
-  res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-  res.send(text);
+    const resp = await fetch(signedUrl);
+    const text = await resp.text();
+
+    res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+    res.send(text);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching m3u8');
+  }
 });
 
+// ✅ TS PROXY
+app.get('/proxy', async (req, res) => {
+  const key = req.query.key;
+  if (!key) return res.status(400).send('Missing key param');
 
+  try {
+    const signedUrl = s3.getSignedUrl('getObject', {
+      Bucket: 'lawtus',
+      Key: key,
+      Expires: 60,
+    });
+
+    const fileResp = await fetch(signedUrl);
+    if (!fileResp.ok) return res.status(500).send('Error fetching .ts');
+
+    res.setHeader('Content-Type', fileResp.headers.get('content-type') || 'video/MP2T');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+
+    fileResp.body.pipe(res);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Proxy error');
+  }
+});
 
 app.listen(3000,()=>{
     console.log('running');
