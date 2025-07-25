@@ -128,7 +128,13 @@ app.get('/get-m3u8',async(req,res)=>{
             Key:id
         }
     ));
-    
+    res.set({
+    'Content-Type': 'application/vnd.apple.mpegurl',
+    'Content-Disposition': `inline; filename="${id?.split('/').pop() || 'playlist.m3u8'}"`,
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,OPTIONS',
+    'Access-Control-Allow-Headers': '*',
+    });
     const originalm3u8=await streamtostring(originalm3u8stream.Body);
     const linelist=originalm3u8.split('\n').map((line)=>{
         if(line.endsWith('.ts')){
@@ -150,8 +156,11 @@ app.get('/get-video',async(req,res)=>{
     ));
 
     res.set({
-        'Content-Type': 'video/MP2T', 
-        'Content-Length': videostream.ContentLength,
+        'Content-Type': 'video/MP2T',
+        'Content-Length': s3Response.ContentLength,
+        'Content-Disposition': `inline; filename="${id.split('/').pop()}"`,
+        'Access-Control-Allow-Origin': '*', // important!
+        'Access-Control-Allow-Headers': '*'
     });
     videostream.Body.pipe(res);
     
