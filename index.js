@@ -130,7 +130,7 @@ app.get('/get-m3u8', async (req, res) => {
     const resp = await fetch(signedUrl);
     if (!resp.ok) {
       console.error('Failed to fetch m3u8:', resp.statusText);
-      return res.status(500).send('Error fetching m3u8');
+      return res.status(500).send('Error fetching m3u81');
     }
 
     const text = await resp.text();
