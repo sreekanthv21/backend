@@ -128,6 +128,7 @@ app.get('/get-m3u8',async(req,res)=>{
             Key:id
         }
     ));
+    res.send('ok');
     const originalm3u8=await streamtostring(originalm3u8stream);
     const linelist=originalm3u8.split('\n').map((line)=>{
         if(line.endsWith('.ts')){
