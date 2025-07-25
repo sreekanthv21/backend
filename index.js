@@ -157,7 +157,7 @@ app.get('/get-video',async(req,res)=>{
 
     res.set({
         'Content-Type': 'video/MP2T',
-        'Content-Length': s3Response.ContentLength,
+        'Content-Length': videostream.ContentLength,
         'Content-Disposition': `inline; filename="${id.split('/').pop()}"`,
         'Access-Control-Allow-Origin': '*', // important!
         'Access-Control-Allow-Headers': '*'
