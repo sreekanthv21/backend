@@ -118,24 +118,28 @@ app.get('/getsignedurl',async(req,res)=>{
 
 app.get('/proxy', async (req, res) => {
   const { key } = req.query;
-  if (!key) return res.status(400).send("Missing key");
+  if (!key) return res.status(400).send('Missing key');
 
-  try {
-    const command = new GetObjectCommand({
-      Bucket: 'lawtus',
-      Key: key
-    });
+  const wasabiUrl = `https://s3.wasabisys.com/your-bucket/${key}`;
+  const fileStream = await fetch(wasabiUrl); // Auth header if private
 
-    const wasabiRes = await s3.send(command);
-
-    res.setHeader("Content-Type", "video/MP2T");
-    res.setHeader("Access-Control-Allow-Origin", "*");
-
-    wasabiRes.Body.pipe(res);
-  } catch (e) {
-    res.status(500).send("Error: " + e.message);
-  }
+  res.setHeader('Content-Type', 'video/mp2t');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  fileStream.body.pipe(res);
 });
+
+app.get('/get-m3u8', async (req, res) => {
+  const { file } = req.query; // e.g., video1/output.m3u8
+  if (!file) return res.status(400).send('Missing file param');
+
+  const wasabiUrl = `https://s3.wasabisys.com/your-bucket/${file}`;
+  const resp = await fetch(wasabiUrl, { headers: { 'Authorization': 'Bearer xyz' } }); // or presigned
+  const text = await resp.text();
+
+  res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+  res.send(text);
+});
+
 
 
 app.listen(3000,()=>{
