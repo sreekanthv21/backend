@@ -3,7 +3,6 @@ const cors= require('cors');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {S3Client, GetObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
-const fetch = require('node-fetch');
 const app= express();
 app.use(cors());
 
