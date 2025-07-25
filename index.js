@@ -129,7 +129,7 @@ app.get('/get-m3u8',async(req,res)=>{
         }
     ));
     res.set({
-    'Content-Type': 'application/vnd.apple.mpegurl',
+    'Content-Type': 'application/x-mpegURL',
     'Content-Disposition': `inline; filename="${id?.split('/').pop() || 'playlist.m3u8'}"`,
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET,OPTIONS',
