@@ -124,7 +124,7 @@ app.get('/get-m3u8', async (req, res) => {
   if (!file) return res.status(400).send('Missing file param');
 
   try {
-    const command = new GetObjectCommand({ Bucket: bucket, Key: file });
+    const command = new GetObjectCommand({ Bucket: 'lawtus', Key: file });
     const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
 
     const resp = await fetch(signedUrl);
