@@ -138,7 +138,7 @@ app.get('/get-m3u8',async(req,res)=>{
     const originalm3u8=await streamtostring(originalm3u8stream.Body);
     const linelist=originalm3u8.split('\n').map((line)=>{
         if(line.endsWith('.ts')){
-            return `cdn.lawtusprep.org/get-video?id=${dir}/${line}`
+            return `https://cdn.lawtusprep.org/get-video?id=${dir}/${line}`
         }
         return line
     });
