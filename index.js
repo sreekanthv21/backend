@@ -138,7 +138,7 @@ app.get('/get-m3u8', async (req, res) => {
     res.send(text);
   } catch (err) {
     console.error('M3U8 Fetch Error:', err);
-    res.status(500).send('Error fetching m3u8');
+    res.status(500).send('Error fetching m3u82');
   }
 });
 
