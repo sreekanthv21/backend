@@ -120,61 +120,41 @@ app.get('/getsignedurl',async(req,res)=>{
 
 
 
-app.get('/get-m3u8', async (req, res) => {
-  const { file } = req.query;
-  if (!file) return res.status(400).send('Missing file param');
-
-  try {
-    const command = new GetObjectCommand({ Bucket: 'lawtus', Key: file });
-    const response = await s3.send(command);
-
-    const rl = readline.createInterface({
-      input: response.Body,
-      crlfDelay: Infinity
+app.get('/get-m3u8',async(req,res)=>{
+    const {id}= req.query;
+    const originalm3u8stream=await s3.send(new GetObjectCommand(
+        {
+            Bucket:'lawtus',
+            Key:id
+        }
+    ));
+    const originalm3u8=await streamtostring(originalm3u8stream);
+    const linelist=originalm3u8.split('\n').map((line)=>{
+        if(line.endsWith('.ts')){
+            return `cdn.lawtusprep.org/get-video?id=${line}`
+        }
+        return line
     });
 
-    res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(linelist.join('\n'));
+})
 
-    const rewrittenStream = new Readable({
-      read() {}
+app.get('/get-video',async(req,res)=>{
+    const {id}=req.query;
+    const videostream=await s3.send(new GetObjectCommand(
+        {
+            Bucket:'lawtus',
+            Key:id
+        }
+    ));
+
+    res.set({
+        'Content-Type': 'video/MP2T', 
+        'Content-Length': videostream.ContentLength,
     });
-
-    rl.on('line', (line) => {
-      // If line looks like a .ts file (simple heuristic), rewrite
-      if (line.trim().endsWith('.ts')) {
-        const newUrl = `https://cdn.lawtusprep.org/proxy?key=${file.substring(0, file.lastIndexOf('/') + 1)}${line.trim()}`;
-        rewrittenStream.push(newUrl + '\n');
-      } else {
-        rewrittenStream.push(line + '\n');
-      }
-    });
-
-    rl.on('close', () => rewrittenStream.push(null));
-
-    rewrittenStream.pipe(res);
-  } catch (err) {
-    console.error('M3U8 Fetch Error:', err.message);
-    res.status(404).send('M3U8 not found');
-  }
-});
-
-app.get('/proxy', async (req, res) => {
-  const { key } = req.query;
-  if (!key) return res.status(400).send('Missing key param');
-
-  try {
-    const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
-    const response = await s3.send(command);
-
-    res.setHeader('Content-Type', response.ContentType || 'video/MP2T');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    response.Body.pipe(res);
-  } catch (err) {
-    console.error('TS Fetch Error:', err.message);
-    res.status(404).send('TS chunk not found');
-  }
-});
+    videostream.Body.pipe(res);
+    
+})
 
 app.listen(3000,()=>{
     console.log('running');
