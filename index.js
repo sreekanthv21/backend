@@ -118,53 +118,44 @@ app.get('/getsignedurl',async(req,res)=>{
 
 
 
-app.get('/get-m3u8', async (req, res) => {
-  const { file } = req.query;
-  if (!file) return res.status(400).send('Missing file param');
+app.get('/hls/:filename', async (req, res) => {
+  const { filename } = req.params;
+  const { dir } = req.query;
+  const key = `${dir}/${filename}`;
 
   try {
-    const command = new GetObjectCommand({ Bucket: 'lawtus', Key: file });
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
+    const resp = await s3.send(new GetObjectCommand({ Bucket: 'lawtus', Key: key }));
+    const m3u8 = await streamtostring(resp.Body);
 
-    const resp = await fetch(signedUrl);
-    if (!resp.ok) {
-      console.error('Failed to fetch m3u8:', resp.statusText);
-      return res.status(500).send('Error fetching m3u81');
-    }
+    const modified = m3u8
+      .split('\n')
+      .map(line => (line.trim().endsWith('.ts') ? `/proxy?key=${dir}/${line.trim()}` : line))
+      .join('\n');
 
-    const text = await resp.text();
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-    res.send(text);
+    res.setHeader('Cache-Control', 'public, max-age=3600'); // 1 hour
+    res.send(modified);
   } catch (err) {
-    console.error('M3U8 Fetch Error:', err);
-    res.status(500).send('Error fetching m3u82');
+    console.error('m3u8 error:', err);
+    res.status(500).send('Error fetching m3u8');
   }
 });
 
-// 🎯 .TS Proxy Endpoint
+// ✅ .ts route — stream directly from Wasabi
 app.get('/proxy', async (req, res) => {
   const { key } = req.query;
-  if (!key) return res.status(400).send('Missing key param');
+  if (!key) return res.status(400).send('Missing key');
 
   try {
-    const command = new GetObjectCommand({ Bucket: bucket, Key: key });
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
-
-    const fileResp = await fetch(signedUrl);
-    if (!fileResp.ok) {
-      console.error('Failed to fetch TS file:', fileResp.statusText);
-      return res.status(500).send('Error fetching .ts');
-    }
-
-    res.setHeader('Content-Type', fileResp.headers.get('content-type') || 'video/MP2T');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    fileResp.body.pipe(res);
+    const resp = await s3.send(new GetObjectCommand({ Bucket: 'lawtus', Key: key }));
+    res.setHeader('Content-Type', 'video/MP2T');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+    resp.Body.pipe(res);
   } catch (err) {
-    console.error('TS Proxy Error:', err);
-    res.status(500).send('Proxy error');
+    console.error('TS fetch failed:', err);
+    res.status(500).send('Wasabi TS fetch failed');
   }
 });
-
 app.listen(3000,()=>{
     console.log('running');
 })
