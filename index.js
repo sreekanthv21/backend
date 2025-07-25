@@ -129,7 +129,7 @@ app.get('/hls/:filename', async (req, res) => {
 
     const modified = m3u8
       .split('\n')
-      .map(line => (line.trim().endsWith('.ts') ? `/proxy?key=${dir}/${line.trim()}` : line))
+      .map(line => (line.trim().endsWith('.ts') ? `https://cdn.lawtusprep.org/proxy?key=${dir}/${line.trim()}` : line))
       .join('\n');
 
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
