@@ -121,7 +121,7 @@ app.get('/getsignedurl',async(req,res)=>{
 
 
 app.get('/get-m3u8',async(req,res)=>{
-    const {id}= req.query;
+    const {id,dir}= req.query;
     const originalm3u8stream=await s3.send(new GetObjectCommand(
         {
             Bucket:'lawtus',
@@ -132,7 +132,7 @@ app.get('/get-m3u8',async(req,res)=>{
     const originalm3u8=await streamtostring(originalm3u8stream.Body);
     const linelist=originalm3u8.split('\n').map((line)=>{
         if(line.endsWith('.ts')){
-            return `cdn.lawtusprep.org/get-video?id=${line}`
+            return `cdn.lawtusprep.org/get-video?id=${dir}/${line}`
         }
         return line
     });
