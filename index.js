@@ -1,5 +1,7 @@
 const express = require('express');
 const cors= require('cors');
+const { Readable } = require('stream');
+const readline = require('readline');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {S3Client, GetObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
@@ -118,44 +120,62 @@ app.get('/getsignedurl',async(req,res)=>{
 
 
 
-app.get('/hls/:filename', async (req, res) => {
-  const { filename } = req.params;
-  const { dir } = req.query;
-  const key = `${dir}/${filename}`;
+app.get('/get-m3u8', async (req, res) => {
+  const { file } = req.query;
+  if (!file) return res.status(400).send('Missing file param');
 
   try {
-    const resp = await s3.send(new GetObjectCommand({ Bucket: 'lawtus', Key: key }));
-    const m3u8 = await streamtostring(resp.Body);
+    const command = new GetObjectCommand({ Bucket: 'lawtus', Key: file });
+    const response = await s3.send(command);
 
-    const modified = m3u8
-      .split('\n')
-      .map(line => (line.trim().endsWith('.ts') ? `https://cdn.lawtusprep.org/proxy?key=${dir}/${line.trim()}` : line))
-      .join('\n');
+    const rl = readline.createInterface({
+      input: response.Body,
+      crlfDelay: Infinity
+    });
 
     res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
-    res.setHeader('Cache-Control', 'public, max-age=3600'); // 1 hour
-    res.send(modified);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+
+    const rewrittenStream = new Readable({
+      read() {}
+    });
+
+    rl.on('line', (line) => {
+      // If line looks like a .ts file (simple heuristic), rewrite
+      if (line.trim().endsWith('.ts')) {
+        const newUrl = `https://cdn.lawtusprep.org/proxy?key=${file.substring(0, file.lastIndexOf('/') + 1)}${line.trim()}`;
+        rewrittenStream.push(newUrl + '\n');
+      } else {
+        rewrittenStream.push(line + '\n');
+      }
+    });
+
+    rl.on('close', () => rewrittenStream.push(null));
+
+    rewrittenStream.pipe(res);
   } catch (err) {
-    console.error('m3u8 error:', err);
-    res.status(500).send('Error fetching m3u8');
+    console.error('M3U8 Fetch Error:', err.message);
+    res.status(404).send('M3U8 not found');
   }
 });
 
-// ✅ .ts route — stream directly from Wasabi
 app.get('/proxy', async (req, res) => {
   const { key } = req.query;
-  if (!key) return res.status(400).send('Missing key');
+  if (!key) return res.status(400).send('Missing key param');
 
   try {
-    const resp = await s3.send(new GetObjectCommand({ Bucket: 'lawtus', Key: key }));
-    res.setHeader('Content-Type', 'video/MP2T');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
-    resp.Body.pipe(res);
+    const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
+    const response = await s3.send(command);
+
+    res.setHeader('Content-Type', response.ContentType || 'video/MP2T');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    response.Body.pipe(res);
   } catch (err) {
-    console.error('TS fetch failed:', err);
-    res.status(500).send('Wasabi TS fetch failed');
+    console.error('TS Fetch Error:', err.message);
+    res.status(404).send('TS chunk not found');
   }
 });
+
 app.listen(3000,()=>{
     console.log('running');
 })
