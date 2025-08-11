@@ -125,12 +125,12 @@ app.get('/getimg',async(req,res)=>{
         Key:dir
     }))
     res.set({
-        'Content-Type': data.ContentType,
+        'Content-Type': data.ContentType || 'image/jpeg',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type'
     })
-    data.Body.pipe(res);
+    await pipeline(data.Body, res);
 })
 
 
