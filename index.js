@@ -133,7 +133,7 @@ app.get('/getimg',async(req,res)=>{
     res.set({
         'Content-Type': 'image/jpeg',
         'Content-Length': buffer.length,
-        'Content-Disposition': 'inline',
+        
         'Access-Control-Allow-Origin': '*', 
         'Access-Control-Allow-Headers': '*',
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
