@@ -131,7 +131,7 @@ app.get('/getimg',async(req,res)=>{
         }
         const buffer = Buffer.concat(chunks);
     res.set({
-        'Content-Type': 'image/jpeg',
+        
         'Content-Length': buffer.length,
         
         
@@ -141,7 +141,7 @@ app.get('/getimg',async(req,res)=>{
         'Surrogate-Control': 'no-store'
         
     });
-    res.end(buffer);
+    res.send(buffer);
     
 })
 
