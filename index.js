@@ -119,22 +119,19 @@ app.get('/getsignedurl',async(req,res)=>{
 })
 
 app.get('/getimg',async(req,res)=>{
-    try
-    {const {dir}=req.query;
+    const {dir}=req.query;
     const data=await s3.send(new GetObjectCommand({
         Bucket:'lawtus',
         Key:dir
-    }))
+    }));
     res.set({
         'Content-Type': data.ContentType,
         'Content-Length': data.ContentLength,
         
         
-    })
-    (data.Body).pipe(res);}
-    catch(e){
-        res.send('error');
-    }
+    });
+    (data.Body).pipe(res);
+    
 })
 
 
