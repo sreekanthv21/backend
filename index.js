@@ -126,7 +126,7 @@ app.get('/getimg',async(req,res)=>{
         Key:dir
     }))
     res.set({
-        'Content-Type': data.ContentType || 'image/jpeg',
+        'Content-Type': data.ContentType,
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type'
