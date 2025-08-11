@@ -137,7 +137,8 @@ app.get('/getimg',async(req,res)=>{
         'Access-Control-Allow-Headers': '*'
         
     });
-    res.send(buffer);
+    res.write(buffer);
+    res.end();
     
 })
 
