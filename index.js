@@ -138,7 +138,7 @@ app.get('/getimg',async(req,res)=>{
         'Content-Length': buffer.length,
        
     });
-    res.send(buffer);
+    res.end(buffer);
     
 })
 
