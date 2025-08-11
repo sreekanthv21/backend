@@ -119,7 +119,8 @@ app.get('/getsignedurl',async(req,res)=>{
 })
 
 app.get('/getimg',async(req,res)=>{
-    const {dir}=req.query;
+    try
+    {const {dir}=req.query;
     const data=await s3.send(new GetObjectCommand({
         Bucket:'lawtus',
         Key:dir
@@ -130,7 +131,10 @@ app.get('/getimg',async(req,res)=>{
         'Access-Control-Allow-Methods': 'GET,OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type'
     })
-    await pipeline(data.Body, res);
+    await pipeline(data.Body, res);}
+    catch(e){
+        res.send('error');
+    }
 })
 
 
