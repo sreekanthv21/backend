@@ -124,15 +124,21 @@ app.get('/getimg',async(req,res)=>{
         Bucket:'lawtus',
         Key:dir
     }));
+
+    const chunks = [];
+        for await (const chunk of data.Body) {
+            chunks.push(chunk);
+        }
+        const buffer = Buffer.concat(chunks);
     res.set({
         'Content-Type': data.ContentType,
         'Content-Length': data.ContentLength,
         'Content-Disposition': 'inline',
-        'Access-Control-Allow-Origin': '*', // important!
+        'Access-Control-Allow-Origin': '*', 
         'Access-Control-Allow-Headers': '*'
         
     });
-    (data.Body).pipe(res);
+    res.send(buffer);
     
 })
 
