@@ -130,16 +130,13 @@ app.get('/getimg',async(req,res)=>{
             chunks.push(chunk);
         }
         const buffer = Buffer.concat(chunks);
+    res.header('Access-Control-Allow-Origin', '*'); // or your domain
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.set({
-        
+        'Content-Type': 'image/jpeg',
         'Content-Length': buffer.length,
-        
-        
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-        'Surrogate-Control': 'no-store'
-        
+       
     });
     res.send(buffer);
     
