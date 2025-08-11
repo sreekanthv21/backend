@@ -135,6 +135,7 @@ app.get('/getimg',async(req,res)=>{
     res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.header('Content-Type', 'image/jpeg',)
     res.header('Content-Length', buffer.length)
+    res.header('Content-Disposition', 'inline; filename="image"')
     
     data.Body.pipe(res);
     
