@@ -127,8 +127,8 @@ app.get('/getimg',async(req,res)=>{
     }))
     res.set({
         'Content-Type': data.ContentType,
-        "Content-Length": data.ContentLength,
-        'Access-Control-Allow-Origin': '*',
+        'Content-Length': data.ContentLength,
+        
         
     })
     (data.Body).pipe(res);}
