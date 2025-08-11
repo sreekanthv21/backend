@@ -133,12 +133,10 @@ app.get('/getimg',async(req,res)=>{
     res.header('Access-Control-Allow-Origin', '*'); // or your domain
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.set({
-        'Content-Type': 'image/jpeg',
-        'Content-Length': buffer.length,
-       
-    });
-    res.end(buffer);
+    res.header('Content-Type', 'image/jpeg',)
+    res.header('Content-Length', buffer.length)
+    
+    data.Body.pipe(res);
     
 })
 
