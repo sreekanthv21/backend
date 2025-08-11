@@ -126,7 +126,10 @@ app.get('/getimg',async(req,res)=>{
     }));
     res.set({
         'Content-Type': data.ContentType,
-        'Access-Control-Allow-Origin': '*'
+        'Content-Length': data.ContentLength,
+        'Content-Disposition': 'inline',
+        'Access-Control-Allow-Origin': '*', // important!
+        'Access-Control-Allow-Headers': '*'
         
     });
     (data.Body).pipe(res);
