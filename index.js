@@ -118,6 +118,18 @@ app.get('/getsignedurl',async(req,res)=>{
     res.send(url)
 })
 
+app.get('/getimg',async(req,res)=>{
+    const {dir}=req.query;
+    const data=await s3.send(new GetObjectCommand({
+        Bucket:'lawtus',
+        Key:dir
+    }))
+    res.set({
+        'Content-Type': data.ContentType
+    })
+    data.Body.pipe(res);
+})
+
 
 
 app.get('/get-m3u8',async(req,res)=>{
