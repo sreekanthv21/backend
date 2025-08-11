@@ -126,7 +126,6 @@ app.get('/getimg',async(req,res)=>{
     }));
     res.set({
         'Content-Type': data.ContentType,
-        'Content-Length': data.ContentLength,
         
         
     });
