@@ -127,11 +127,12 @@ app.get('/getimg',async(req,res)=>{
     }))
     res.set({
         'Content-Type': data.ContentType,
+        "Content-Length": data.ContentLength,
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET,OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type'
     })
-    await pipeline(data.Body, res);}
+    (data.Body).pipe(res);}
     catch(e){
         res.send('error');
     }
