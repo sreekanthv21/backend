@@ -132,7 +132,6 @@ app.get('/getimg',async(req,res)=>{
         const buffer = Buffer.concat(chunks);
     res.set({
         'Content-Type': 'image/jpeg',
-        'Content-Length': buffer.length,
         'Content-Disposition': 'inline',
         'Access-Control-Allow-Origin': '*', 
         'Access-Control-Allow-Headers': '*'
