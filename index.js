@@ -11,6 +11,12 @@ const app= express();
 app.use(cors());
 app.use(express.json());
 
+const serviceAccount = JSON.parse(process.env.firebasejson);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
 admin.initializeApp()
 
 const mailer=nodemailer.createTransport({
