@@ -210,16 +210,17 @@ app.post('/reset-pass',async(req,res)=>{
                 text: `Click here to reset your password: ${link}`,
                 html: `<p>Click <a href="${link}">here</a> to reset your password.</p>`,
             })
+            console.log('shit');
             return res.json({ success: true, message: "Recovery email sent!" });
         }
         else{
             return res.json({
                 success:false,
                 message:"Couldn't send the reset link"
-            })
+            });
         }
     }catch(e){
-
+        console.log('shit')
     }
 })
 
