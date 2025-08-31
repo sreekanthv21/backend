@@ -199,8 +199,12 @@ app.get('/get-video',async(req,res)=>{
 
 app.post('/reset-pass',async(req,res)=>{
     try{
+        console.log('zeroth');
         const {user,email} = req.body;
+        console.log('first');
         const mailsnap = await admin.firestore().collection('students').doc(user).get();
+        console.log('hot');
+        console.log(mailsnap.data()['email']);
         if (mailsnap.exists){
             const link = await admin.auth().generatePasswordResetLink(email)
             await mailer.sendMail({
