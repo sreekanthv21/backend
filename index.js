@@ -9,6 +9,7 @@ const {S3Client, GetObjectCommand, ListObjectsV2Command } = require("@aws-sdk/cl
 
 const app= express();
 app.use(cors());
+app.use(express.json());
 
 admin.initializeApp()
 
