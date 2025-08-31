@@ -204,7 +204,7 @@ app.post('/reset-pass',async(req,res)=>{
         if (mailsnap.exists){
             const link = await admin.auth().generatePasswordResetLink(email)
             await mailer.sendMail({
-                from: '"Lawtus Support" <yourapp@gmail.com>',
+                from: 'kithuin21@gmail.com',
                 to: mailsnap.data()['email'],
                 subject: "Lawtus - Password Reset",
                 text: `Click here to reset your password: ${link}`,
