@@ -208,7 +208,7 @@ app.post('/reset-pass',async(req,res)=>{
     try{
         console.log('zeroth');
         const {user,email} = req.body;
-        console.log('first');
+        console.log('first1');
         const mailsnap = await admin.firestore().collection('students').doc(user).get();
         console.log('hot');
         console.log(mailsnap.data()['email']);
