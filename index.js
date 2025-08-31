@@ -220,7 +220,7 @@ app.post('/reset-pass',async(req,res)=>{
             });
         }
     }catch(e){
-        console.log('shit')
+        console.log('shit1')
     }
 })
 
