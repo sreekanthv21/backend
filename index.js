@@ -1,12 +1,24 @@
 const express = require('express');
 const cors= require('cors');
-const { Readable } = require('stream');
-const readline = require('readline');
+const nodemailer=require('nodemailer');
+const admin=require('firebase-admin');
+
+
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {S3Client, GetObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
 const app= express();
 app.use(cors());
+
+admin.initializeApp()
+
+const mailer=nodemailer.createTransport({
+    service:'gmail',
+    auth:{
+        user:'kithuin21@gmail.com',
+        pass:'xssa ywmy abks jkte'
+    }
+})
 
 const s3 = new S3Client({
   credentials:{
@@ -183,6 +195,32 @@ app.get('/get-video',async(req,res)=>{
     });
     videostream.Body.pipe(res);
     
+})
+
+app.post('/reset-pass',async(req,res)=>{
+    try{
+        const {user,email} = req.body;
+        const mailsnap = await admin.firestore().collection('students').doc(user).get();
+        if (mailsnap.exists){
+            const link = await admin.auth().generatePasswordResetLink(email)
+            await mailer.sendMail({
+                from: '"Lawtus Support" <yourapp@gmail.com>',
+                to: mailsnap.data()['email'],
+                subject: "Lawtus - Password Reset",
+                text: `Click here to reset your password: ${link}`,
+                html: `<p>Click <a href="${link}">here</a> to reset your password.</p>`,
+            })
+            return res.json({ success: true, message: "Recovery email sent!" });
+        }
+        else{
+            return res.json({
+                success:false,
+                message:"Couldn't send the reset link"
+            })
+        }
+    }catch(e){
+
+    }
 })
 
 app.listen(3000,()=>{
