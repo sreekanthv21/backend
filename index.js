@@ -17,7 +17,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-admin.initializeApp()
+
 
 const mailer=nodemailer.createTransport({
     service:'gmail',
