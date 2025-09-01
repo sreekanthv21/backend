@@ -217,9 +217,9 @@ app.post('/reset-pass',async(req,res)=>{
             url: 'https://passwordresetpagebuild.onrender.com', // your Flutter web page
             handleCodeInApp: true,
             };
-
+            console.log('hot1')
             const link = await admin.auth().generatePasswordResetLink(email, actionCodeSettings);
-            
+            console.log(link)
             await mailer.sendMail({
                 from: 'kithuin21@gmail.com',
                 to: mailsnap.data()['email'],
@@ -237,7 +237,7 @@ app.post('/reset-pass',async(req,res)=>{
             });
         }
     }catch(e){
-        console.log('shit1')
+        console.log(e.message)
     }
 })
 
