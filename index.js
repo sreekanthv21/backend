@@ -223,7 +223,8 @@ app.post('/reset-pass',async(req,res)=>{
             const oobCode = urlObj.searchParams.get('oobCode');
             const mode = urlObj.searchParams.get('mode');
             const customLink = `https://passwordresetpagebuild.onrender.com?mode=${mode}&oobCode=${oobCode}&user=${user}`;
-            console.log(link)
+            
+            console.log(customLinklink);
             await mailer.sendMail({
                 from: 'kithuin21@gmail.com',
                 to: 'kithuv21@gmail.com',
