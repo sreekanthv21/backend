@@ -213,7 +213,13 @@ app.post('/reset-pass',async(req,res)=>{
         console.log('hot');
         console.log(mailsnap.data()['email']);
         if (mailsnap.exists){
-            const link = await admin.auth().generatePasswordResetLink(email)
+            const actionCodeSettings = {
+            url: 'https://passwordresetpagebuild.onrender.com', // your Flutter web page
+            handleCodeInApp: true,
+            };
+
+            const link = await admin.auth().generatePasswordResetLink(email, actionCodeSettings);
+            
             await mailer.sendMail({
                 from: 'Lawtus',
                 to: mailsnap.data()['email'],
