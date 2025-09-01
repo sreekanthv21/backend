@@ -229,7 +229,7 @@ app.post('/reset-pass',async(req,res)=>{
                 from: 'kithuin21@gmail.com',
                 to: 'kithuv21@gmail.com',
                 subject: "Lawtus - Password Reset",
-                text: `Click here to reset your password: ${link}`,
+                text: `Click here to reset your password: ${customLink}`,
                 html: `<p>Click <a href="${customLink}">here</a> to reset your password.</p>`,
             })
             console.log('shit');
