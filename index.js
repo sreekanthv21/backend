@@ -219,13 +219,17 @@ app.post('/reset-pass',async(req,res)=>{
             };
             console.log('hot1')
             const link = await admin.auth().generatePasswordResetLink(email, actionCodeSettings);
+            const urlObj = new URL(link);
+            const oobCode = urlObj.searchParams.get('oobCode');
+            const mode = urlObj.searchParams.get('mode');
+            const customLink = `https://passwordresetpagebuild.onrender.com?mode=${mode}&oobCode=${oobCode}`;
             console.log(link)
             await mailer.sendMail({
                 from: 'kithuin21@gmail.com',
                 to: 'kithuv21@gmail.com',
                 subject: "Lawtus - Password Reset",
                 text: `Click here to reset your password: ${link}`,
-                html: `<p>Click <a href="${link}">here</a> to reset your password.</p>`,
+                html: `<p>Click <a href="${customLink}">here</a> to reset your password.</p>`,
             })
             console.log('shit');
             return res.json({ success: true, message: "Recovery email sent!" });
