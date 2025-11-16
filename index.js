@@ -263,6 +263,7 @@ app.post('/checkforfile',async (req,res)=>{
                     if (e.name === 'NotFound' || e.$metadata?.httpStatusCode === 404) {
                         return { 'filename': filename, 'exists': false };
                     }
+                    console.log('full prob')
                 }
             }catch(e){
                 res.send('Error');
