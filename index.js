@@ -257,7 +257,7 @@ app.post('/checkforfile',async (req,res)=>{
                     Key:filename
                 })
                 try{
-                    await S3Client.send(command);
+                    await s3.send(command);
                     return {'filename':filename,'exists':true};
                 }catch(e){
                     if (e.name === 'NotFound' || e.$metadata?.httpStatusCode === 404) {
