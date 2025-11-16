@@ -247,7 +247,7 @@ app.post('/reset-pass',async(req,res)=>{
 })
 
 app.post('/checkforfile',async (req,res)=>{
-    const {filenames}=req.body.filenames;
+    const {filenames}=req.body;
     const result=await Promise.all(
         filenames.map(async(filename)=>{
             try{
@@ -260,7 +260,7 @@ app.post('/checkforfile',async (req,res)=>{
                     return {'filename':filename,'exists':true};
                 }catch(e){
                     if (e.name === 'NotFound' || e.$metadata?.httpStatusCode === 404) {
-                        return { 'filename': filePath, 'exists': false };
+                        return { 'filename': filename, 'exists': false };
                     }
                 }
             }catch(e){
