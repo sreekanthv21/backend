@@ -5,7 +5,7 @@ const admin=require('firebase-admin');
 
 
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const {S3Client, GetObjectCommand, ListObjectsV2Command } = require("@aws-sdk/client-s3");
+const {S3Client, GetObjectCommand, ListObjectsV2Command, HeadObjectCommand } = require("@aws-sdk/client-s3");
 
 const app= express();
 app.use(cors());
@@ -145,10 +145,10 @@ app.get('/getimg',async(req,res)=>{
     }));
 
     const chunks = [];
-        for await (const chunk of data.Body) {
-            chunks.push(chunk);
-        }
-        const buffer = Buffer.concat(chunks);
+    for await (const chunk of data.Body) {
+        chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
     res.set({
         'Content-Type': 'image/jpg',  
     });
@@ -244,6 +244,33 @@ app.post('/reset-pass',async(req,res)=>{
     }catch(e){
         console.log(e.message)
     }
+})
+
+app.post('/checkforfile',async (req,res)=>{
+    const {filenames}=req.body.filenames;
+    const result=await Promise.all(
+        filenames.map(async(filename)=>{
+            try{
+                const command=new HeadObjectCommand({
+                    Bucket:'lawtus',
+                    Key:filename
+                })
+                try{
+                    await S3Client.send(command);
+                    return {'filename':filename,'exists':true};
+                }catch(e){
+                    if (e.name === 'NotFound' || e.$metadata?.httpStatusCode === 404) {
+                        return { 'filename': filePath, 'exists': false };
+                    }
+                }
+            }catch(e){
+                res.send('Error');
+            }
+           
+        })
+        
+    );
+    res.json({result});
 })
 
 app.listen(3000,()=>{
