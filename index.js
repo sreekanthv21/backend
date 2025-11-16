@@ -248,6 +248,7 @@ app.post('/reset-pass',async(req,res)=>{
 
 app.post('/checkforfile',async (req,res)=>{
     const {filenames}=req.body;
+    console.log(filenames);
     const result=await Promise.all(
         filenames.map(async(filename)=>{
             try{
