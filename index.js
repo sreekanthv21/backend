@@ -206,25 +206,25 @@ app.get('/get-video',async(req,res)=>{
 
 app.post('/reset-pass',async(req,res)=>{
     try{
-        console.log('zeroth');
+       
         const {user,email} = req.body;
-        console.log('first1');
+        
         const mailsnap = await admin.firestore().collection('students').doc(user).get();
-        console.log('hot');
+        
         console.log(mailsnap.data()['email']);
         if (mailsnap.exists){
             const actionCodeSettings = {
             url: 'https://passwordresetpagebuild.onrender.com', // your Flutter web page
             handleCodeInApp: true,
             };
-            console.log('hot1')
+           
             const link = await admin.auth().generatePasswordResetLink(email, actionCodeSettings);
             const urlObj = new URL(link);
             const oobCode = urlObj.searchParams.get('oobCode');
             const mode = urlObj.searchParams.get('mode');
             const customLink = `https://passwordresetpagebuild.onrender.com?mode=${mode}&oobCode=${oobCode}&user=${user}`;
             
-            console.log(customLink);
+           
             await mailer.sendMail({
                 from: 'kithuin21@gmail.com',
                 to: 'kithuv21@gmail.com',
@@ -232,7 +232,7 @@ app.post('/reset-pass',async(req,res)=>{
                 text: `Click here to reset your password: ${customLink}`,
                 html: `<p>Click <a href="${customLink}">here</a> to reset your password.</p>`,
             })
-            console.log('shit');
+            
             return res.json({ success: true, message: "Recovery email sent!" });
         }
         else{
