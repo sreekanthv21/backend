@@ -3,6 +3,8 @@ const cors= require('cors');
 const nodemailer=require('nodemailer');
 const admin=require('firebase-admin');
 
+const { CloudTasksClient } = require("@google-cloud/tasks");
+const { DateTime } = require("luxon");
 
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {S3Client, GetObjectCommand, ListObjectsV2Command, HeadObjectCommand } = require("@aws-sdk/client-s3");
@@ -17,7 +19,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-
+const db = admin.firestore();
 
 const mailer=nodemailer.createTransport({
     service:'gmail',
@@ -275,6 +277,116 @@ app.post('/checkforfile',async (req,res)=>{
     
     res.json({result});
 })
+
+app.post("/scheduleWritetest", async (req, res) => {
+  try {
+    const { data1, data2 } = req.body;
+
+    const date1 = DateTime.fromISO(data1.time, { zone: "Asia/Kolkata" });
+    const date2 = DateTime.fromISO(data2.time, { zone: "Asia/Kolkata" });
+
+    const project = "lawtus-d033f";
+    const queue = "scheduling-queue";
+    const location = "us-central1";
+
+    const url = `https://lawtusbackend.onrender.com/delayedWritetest`;
+
+    const parent = tasksClient.queuePath(project, location, queue);
+
+    const task1 = {
+      httpRequest: {
+        httpMethod: "POST",
+        url,
+        headers: { "Content-Type": "application/json" },
+        body: Buffer.from(JSON.stringify(data1)).toString("base64"),
+      },
+      scheduleTime: { seconds: Math.floor(date1.toSeconds()) },
+    };
+
+    const task2 = {
+      httpRequest: {
+        httpMethod: "POST",
+        url,
+        headers: { "Content-Type": "application/json" },
+        body: Buffer.from(JSON.stringify(data2)).toString("base64"),
+      },
+      scheduleTime: { seconds: Math.floor(date2.toSeconds()) },
+    };
+
+    await tasksClient.createTask({ parent, task: task1 });
+    await tasksClient.createTask({ parent, task: task2 });
+
+    res.send("Tasks scheduled");
+  } catch (err) {
+    console.error("Schedule error:", err);
+    res.status(500).send("Failed to schedule");
+  }
+});
+
+app.post("/scheduleWritestudent", async (req, res) => {
+  try {
+    const { data } = req.body;
+
+    const date = DateTime.fromISO(data1.time, { zone: "Asia/Kolkata" });
+
+
+    const project = "lawtus-d033f";
+    const queue = "scheduling-queue-student";
+    const location = "us-central1";
+
+    const url = `https://lawtusbackend.onrender.com/delayedWritestudent`;
+
+    const parent = tasksClient.queuePath(project, location, queue);
+
+    const task = {
+      httpRequest: {
+        httpMethod: "POST",
+        url,
+        headers: { "Content-Type": "application/json" },
+        body: Buffer.from(JSON.stringify(data)).toString("base64"),
+      },
+      scheduleTime: { seconds: Math.floor(date.toSeconds()) },
+    };
+
+    await tasksClient.createTask({ parent, task: task });
+
+    res.send("Tasks scheduled");
+  } catch (err) {
+    console.error("Schedule error:", err);
+    res.status(500).send("Failed to schedule");
+  }
+});
+
+app.post("/delayedWritetest", async (req, res) => {
+  try {
+    const { quizid, status } = req.body;
+
+    await db.collection("tests").doc(quizid).set({
+      status: status,
+      executedAt: admin.firestore.FieldValue.serverTimestamp(),
+    },{merge:true});
+
+    res.send("Document written");
+  } catch (err) {
+    console.error("Delayed write error:", err);
+    res.status(500).send("Failed to write");
+  }
+});
+app.post("/delayedWritestudent", async (req, res) => {
+  try {
+    const { quizid, uid } = req.body;
+
+    await db.collection("students").doc(uid).collection("tests").doc(quizid).set({
+      status: 'submitted',
+      endtime: admin.firestore.FieldValue.serverTimestamp(),
+    },{merge:true});
+
+    res.send("Document written");
+  } catch (err) {
+    console.error("Delayed write error:", err);
+    res.status(500).send("Failed to write");
+  }
+});
 
 app.listen(3000,()=>{
     console.log('running');
