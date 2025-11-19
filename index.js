@@ -13,7 +13,9 @@ const app= express();
 app.use(cors());
 app.use(express.json());
 
-const tasksClient=new CloudTasksClient();
+const tasksClient=new CloudTasksClient(
+    {credentials: JSON.parse(process.env.cloud-task-key)}
+);
 
 const serviceAccount = JSON.parse(process.env.firebasejson);
 
