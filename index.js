@@ -13,6 +13,8 @@ const app= express();
 app.use(cors());
 app.use(express.json());
 
+const tasksClient=new CloudTasksClient();
+
 const serviceAccount = JSON.parse(process.env.firebasejson);
 
 admin.initializeApp({
