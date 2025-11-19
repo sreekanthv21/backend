@@ -294,6 +294,7 @@ app.post("/scheduleWritetest", async (req, res) => {
     const url = `https://lawtusbackend.onrender.com/delayedWritetest`;
 
     const parent = tasksClient.queuePath(project, location, queue);
+    console.log(parent);
 
     const task1 = {
       httpRequest: {
@@ -304,6 +305,7 @@ app.post("/scheduleWritetest", async (req, res) => {
       },
       scheduleTime: { seconds: Math.floor(date1.toSeconds()) },
     };
+    console.log('mm');
 
     const task2 = {
       httpRequest: {
@@ -317,7 +319,7 @@ app.post("/scheduleWritetest", async (req, res) => {
 
     await tasksClient.createTask({ parent, task: task1 });
     await tasksClient.createTask({ parent, task: task2 });
-
+    console.log('task scheduled')
     res.send("Tasks scheduled");
   } catch (err) {
     console.error("Schedule error:", err);
