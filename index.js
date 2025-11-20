@@ -334,7 +334,7 @@ app.post("/scheduleWritestudent", async (req, res) => {
   try {
     const { data } = req.body;
 
-    const date = DateTime.fromISO(data1.time, { zone: "Asia/Kolkata" });
+    const date = DateTime.fromISO(data.time, { zone: "Asia/Kolkata" });
 
 
     const project = "lawtus-d033f";
