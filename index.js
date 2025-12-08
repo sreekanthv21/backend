@@ -286,7 +286,6 @@ app.post('/checkforfile',async (req,res)=>{
 app.post("/scheduleWritetest", async (req, res) => {
   try {
     const { data1, data2 } = req.body;
-    console.log('lkandvklksndlvlsdknvlsnkdlvnksldvnk');
 
     const date1 = DateTime.fromISO(data1.time, { zone: "Asia/Kolkata" });
     const date2 = DateTime.fromISO(data2.time, { zone: "Asia/Kolkata" });
@@ -394,6 +393,23 @@ app.post("/delayedWritestudent", async (req, res) => {
   } catch (err) {
     console.error("Delayed write error:", err);
     res.status(500).send("Failed to write");
+  }
+});
+
+
+app.get("/functogetlivetime", (req, res) => {
+  try {
+    const time = new Date()
+      .toLocaleString("sv-SE", {
+        timeZone: "Asia/Kolkata",
+        hour12: false,
+      })
+      .replace(" ", "T");
+
+    res.json({ time });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "error" });
   }
 });
 
