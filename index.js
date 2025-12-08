@@ -337,7 +337,7 @@ app.post("/scheduleWritestudent", async (req, res) => {
 
     const date = DateTime.fromISO(data.time, { zone: "Asia/Kolkata" });
 
-    console.log(data.time);
+    console.log(date);
     const project = "lawtus-d033f";
     const queue = "scheduling-queue-student";
     const location = "us-central1";
