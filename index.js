@@ -8,6 +8,7 @@ const { DateTime } = require("luxon");
 
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {S3Client, GetObjectCommand, ListObjectsV2Command, HeadObjectCommand } = require("@aws-sdk/client-s3");
+const { Timestamp } = require('firebase-admin/firestore');
 
 const app= express();
 app.use(cors());
@@ -285,7 +286,7 @@ app.post('/checkforfile',async (req,res)=>{
 
 app.post("/scheduleWritetest", async (req, res) => {
   try {
-    const { data1, data2 } = req.body;
+    const { data1, data2 ,quizid} = req.body;
 
     const date1 = DateTime.fromISO(data1.time, { zone: "Asia/Kolkata" });
     const date2 = DateTime.fromISO(data2.time, { zone: "Asia/Kolkata" });
@@ -320,10 +321,18 @@ app.post("/scheduleWritetest", async (req, res) => {
       scheduleTime: { seconds: Math.floor(date2.toSeconds()) },
     };
 
-    await tasksClient.createTask({ parent, task: task1 });
-    await tasksClient.createTask({ parent, task: task2 });
+    const [task1id]=await tasksClient.createTask({ parent, task: task1 });
+    const [task2id]=await tasksClient.createTask({ parent, task: task2 });
     console.log('task scheduled')
-    res.send("Tasks scheduled");
+    res.send('Task scheduled');
+
+    await db.collection("tests").doc(quizid).set({
+      scheduledstarttime: Timestamp.fromDate(date1.toJSDate()),
+      scheduledendtime: Timestamp.fromDate(date1.toJSDate()),
+      task1id:task1id,
+      task2id:task2id
+    },{merge:true});
+
   } catch (err) {
     console.error("Schedule error:", err);
     res.status(500).send("Failed to schedule");
@@ -412,6 +421,16 @@ app.get("/functogetlivetime", (req, res) => {
     res.status(500).json({ error: "error" });
   }
 });
+
+app.post("/deletecloudtask",async(req,res)=>{
+  try{
+    const {taskid1,taskid2}=req.body;
+    await tasksClient.deleteTask({ name: taskid1 });
+    await tasksClient.deleteTask({ name:taskid2})
+  }catch(e){
+    console.log('not good')
+  }
+})
 
 app.listen(3000,()=>{
     console.log('running');
