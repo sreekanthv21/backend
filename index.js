@@ -429,9 +429,9 @@ app.post("/deletecloudtask",async(req,res)=>{
 
   try{
     const {task1id,task2id,quizid}=req.body;
-    await tasksClient.deleteTask({ name: task1id});
-    await tasksClient.deleteTask({ name:task2id});
-
+    await tasksClient.deleteTask({ name: task1id });
+    await tasksClient.deleteTask({ name: task2id });
+    
     await db.collection("tests").doc(quizid).update({
       scheduledstarttime: admin.firestore.FieldValue.delete(),
       scheduledendtime: admin.firestore.FieldValue.delete(),
