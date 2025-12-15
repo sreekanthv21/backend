@@ -324,14 +324,15 @@ app.post("/scheduleWritetest", async (req, res) => {
     const [task1id]=await tasksClient.createTask({ parent, task: task1 });
     const [task2id]=await tasksClient.createTask({ parent, task: task2 });
     console.log('task scheduled')
-    console.log(task1id)
+    console.log(task1id);
+    console.log(quizid);
     res.send('Task scheduled');
 
     await db.collection("tests").doc(quizid).set({
       scheduledstarttime: Timestamp.fromDate(date1.toJSDate()),
       scheduledendtime: Timestamp.fromDate(date1.toJSDate()),
-      task1id:task1id,
-      task2id:task2id
+      task1id:task1id.name,
+      task2id:task2id.name
     },{merge:true});
 
   } catch (err) {
