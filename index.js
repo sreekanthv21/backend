@@ -428,9 +428,9 @@ app.get("/functogetlivetime", (req, res) => {
 app.post("/deletecloudtask",async(req,res)=>{
 
   try{
-    const {taskid1,taskid2,quizid}=req.body;
-    await tasksClient.deleteTask({ name: taskid1});
-    await tasksClient.deleteTask({ name:taskid2});
+    const {task1id,task2id,quizid}=req.body;
+    await tasksClient.deleteTask({ name: task1id});
+    await tasksClient.deleteTask({ name:task2id});
 
     await db.collection("students").doc(uid).collection("tests").doc(quizid).update({
       scheduledstarttime: admin.firestore.FieldValue.delete(),
