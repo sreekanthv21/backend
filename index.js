@@ -324,6 +324,7 @@ app.post("/scheduleWritetest", async (req, res) => {
     const [task1id]=await tasksClient.createTask({ parent, task: task1 });
     const [task2id]=await tasksClient.createTask({ parent, task: task2 });
     console.log('task scheduled')
+    console.log(task1id)
     res.send('Task scheduled');
 
     await db.collection("tests").doc(quizid).set({
