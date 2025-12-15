@@ -330,7 +330,7 @@ app.post("/scheduleWritetest", async (req, res) => {
 
     await db.collection("tests").doc(quizid).set({
       scheduledstarttime: Timestamp.fromDate(date1.toJSDate()),
-      scheduledendtime: Timestamp.fromDate(date1.toJSDate()),
+      scheduledendtime: Timestamp.fromDate(date2.toJSDate()),
       task1id:task1id.name,
       task2id:task2id.name
     },{merge:true});
