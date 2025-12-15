@@ -432,9 +432,11 @@ app.post("/deletecloudtask",async(req,res)=>{
     await tasksClient.deleteTask({ name: task1id});
     await tasksClient.deleteTask({ name:task2id});
 
-    await db.collection("students").doc(uid).collection("tests").doc(quizid).update({
+    await db.collection("tests").doc(quizid).update({
       scheduledstarttime: admin.firestore.FieldValue.delete(),
       scheduledendtime: admin.firestore.FieldValue.delete(),
+      task1id: admin.firestore.FieldValue.delete(),
+      task2id: admin.firestore.FieldValue.delete()
     },{merge:true});
     res.send('Deleted');
   }catch(e){
