@@ -326,7 +326,6 @@ app.post("/scheduleWritetest", async (req, res) => {
     console.log('task scheduled')
     console.log(task1id);
     console.log(quizid);
-    res.send('Task scheduled');
 
     await db.collection("tests").doc(quizid).set({
       scheduledstarttime: Timestamp.fromDate(date1.toJSDate()),
@@ -334,6 +333,8 @@ app.post("/scheduleWritetest", async (req, res) => {
       task1id:task1id.name,
       task2id:task2id.name
     },{merge:true});
+
+    res.send('Task scheduled');
 
   } catch (err) {
     console.error("Schedule error:", err);
@@ -425,12 +426,20 @@ app.get("/functogetlivetime", (req, res) => {
 });
 
 app.post("/deletecloudtask",async(req,res)=>{
+
   try{
-    const {taskid1,taskid2}=req.body;
-    await tasksClient.deleteTask({ name: taskid1 });
-    await tasksClient.deleteTask({ name:taskid2})
+    const {taskid1,taskid2,quizid}=req.body;
+    await tasksClient.deleteTask({ name: taskid1});
+    await tasksClient.deleteTask({ name:taskid2});
+
+    await db.collection("students").doc(uid).collection("tests").doc(quizid).update({
+      scheduledstarttime: admin.firestore.FieldValue.delete(),
+      scheduledendtime: admin.firestore.FieldValue.delete(),
+    },{merge:true});
+    res.send('Deleted');
   }catch(e){
-    console.log('not good')
+    console.log('not good');
+    res.status(500).json({ error: "error" });
   }
 })
 
