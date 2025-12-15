@@ -440,7 +440,7 @@ app.post("/deletecloudtask",async(req,res)=>{
     },{merge:true});
     res.send('Deleted');
   }catch(e){
-    console.log('not good');
+    console.log(e);
     res.status(500).json({ error: "error" });
   }
 })
