@@ -291,6 +291,11 @@ app.post("/scheduleWritetest", async (req, res) => {
     const date1 = DateTime.fromISO(data1.time, { zone: "Asia/Kolkata" });
     const date2 = DateTime.fromISO(data2.time, { zone: "Asia/Kolkata" });
 
+    console.log(date1);
+    console.log(date2);
+    console.log(Math.floor(date1.toSeconds()));
+    console.log(Math.floor(date2.toSeconds()));
+
     const project = "lawtus-d033f";
     const queue = "scheduling-queue";
     const location = "us-central1";
@@ -443,7 +448,8 @@ app.post("/deletecloudtask",async(req,res)=>{
       scheduledstarttime: admin.firestore.FieldValue.delete(),
       scheduledendtime: admin.firestore.FieldValue.delete(),
       task1id: admin.firestore.FieldValue.delete(),
-      task2id: admin.firestore.FieldValue.delete()
+      task2id: admin.firestore.FieldValue.delete(),
+      status: admin.firestore.FieldValue.delete(),
     },{merge:true});
     res.send('Deleted');
   }catch(e){
