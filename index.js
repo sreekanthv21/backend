@@ -439,7 +439,7 @@ app.get("/functogetlivetime", (req, res) => {
   }
 });
 
-app.post("/deletecloudtask",async(req,res)=>{
+app.post("/deletecloudtasktest",async(req,res)=>{
 
   async function safeDelete(taskName) {
     try {
@@ -460,6 +460,30 @@ app.post("/deletecloudtask",async(req,res)=>{
       task2id: admin.firestore.FieldValue.delete(),
       status: admin.firestore.FieldValue.delete(),
     },{merge:true});
+    res.send('Deleted');
+  }catch(e){
+    console.log(e);
+    res.status(500).json({ error: "error" });
+  }
+})
+
+app.post("/deletecloudtaskstudent",async(req,res)=>{
+
+  async function safeDelete(taskName) {
+    try {
+      await tasksClient.deleteTask({ name: taskName });
+    } catch (e) {
+      if (e.code !== 5) throw e; // 5 = NOT_FOUND
+    }
+  }
+  try{
+    const {uid,quizid}=req.body;
+    const snap=await db.collection("students").doc(uid).collection("tests").doc(quizid).get();
+    await db.collection("students").doc(uid).collection("tests").doc(quizid).update({
+      status:'submitted',
+      endtime:admin.firestore.FieldValue.serverTimestamp()
+    });
+    await safeDelete(snap.data().taskid);
     res.send('Deleted');
   }catch(e){
     console.log(e);
