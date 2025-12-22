@@ -291,11 +291,6 @@ app.post("/scheduleWritetest", async (req, res) => {
     const date1 = DateTime.fromISO(data1.time, { zone: "Asia/Kolkata" });
     const date2 = DateTime.fromISO(data2.time, { zone: "Asia/Kolkata" });
 
-    console.log(date1);
-    console.log(date2);
-    console.log(Math.floor(date1.toSeconds()));
-    console.log(Math.floor(date2.toSeconds()));
-
     const project = "lawtus-d033f";
     const queue = "scheduling-queue";
     const location = "us-central1";
@@ -350,7 +345,7 @@ app.post("/scheduleWritetest", async (req, res) => {
 app.post("/scheduleWritestudent", async (req, res) => {
   try {
     console.log('start');
-    const { data } = req.body;
+    const { data,startedtime,initialset} = req.body;
 
     const date = DateTime.fromISO(data.time, { zone: "Asia/Kolkata" });
 
@@ -373,7 +368,16 @@ app.post("/scheduleWritestudent", async (req, res) => {
       scheduleTime: { seconds: Math.floor(date.toSeconds()) },
     };
 
-    await tasksClient.createTask({ parent, task: task });
+    const [taskid]=await tasksClient.createTask({ parent, task: task });
+    await db.collection("students").doc(data.uid).collection("tests").doc(data.quizid).set({
+      taskid:taskid,
+      startedtime:startedtime
+    },{merge:true});
+
+    await db.collection("marks").doc(data.uid).set({
+      [data.quizid]: initialset,
+    },{merge:true});
+
 
     res.send("Tasks scheduled");
   } catch (err) {
