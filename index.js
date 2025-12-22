@@ -348,6 +348,7 @@ app.post("/scheduleWritestudent", async (req, res) => {
     const { data,startedtime,initialset} = req.body;
 
     const date = DateTime.fromISO(data.time, { zone: "Asia/Kolkata" });
+    const starteddate = DateTime.fromISO(startedtime, { zone: "Asia/Kolkata" });
 
     console.log(date);
     const project = "lawtus-d033f";
@@ -371,7 +372,7 @@ app.post("/scheduleWritestudent", async (req, res) => {
     const [taskid]=await tasksClient.createTask({ parent, task: task });
     await db.collection("students").doc(data.uid).collection("tests").doc(data.quizid).set({
       taskid:taskid,
-      startedtime:Timestamp.fromDate(startedtime.toJSDate())
+      startedtime:Timestamp.fromDate(starteddate.toJSDate())
     },{merge:true});
 
     await db.collection("marks").doc(data.uid).set({
