@@ -371,12 +371,15 @@ app.post("/scheduleWritestudent", async (req, res) => {
 
     const [taskid]=await tasksClient.createTask({ parent, task: task });
     await db.collection("students").doc(data.uid).collection("tests").doc(data.quizid).set({
-      taskid:taskid,
+      taskid:taskid.name,
       startedtime:Timestamp.fromDate(starteddate.toJSDate())
     },{merge:true});
 
     await db.collection("marks").doc(data.uid).set({
-      [data.quizid]: initialset,
+      [data.quizid]: {
+        answers:initialset,
+        starteddate: Timestamp.fromDate(starteddate.toJSDate())
+      },
     },{merge:true});
 
 
