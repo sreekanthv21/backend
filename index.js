@@ -378,7 +378,7 @@ app.post("/scheduleWritestudent", async (req, res) => {
     await db.collection("marks").doc(data.uid).set({
       [data.quizid]: {
         answers:initialset,
-        starteddate: Timestamp.fromDate(starteddate.toJSDate())
+        startedtime: Timestamp.fromDate(starteddate.toJSDate())
       },
     },{merge:true});
 
