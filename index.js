@@ -29,7 +29,7 @@ const db = admin.firestore();
 const mailer=nodemailer.createTransport({
     service:'gmail',
     auth:{
-        user:'support@lawtus.in',
+        user:'learn@lawtus.in',
         pass:'kttb kbyz zbpx mklu'
     }
 })
