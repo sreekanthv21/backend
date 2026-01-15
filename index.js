@@ -29,8 +29,8 @@ const db = admin.firestore();
 const mailer=nodemailer.createTransport({
     service:'gmail',
     auth:{
-        user:'kithuin21@gmail.com',
-        pass:'xssa ywmy abks jkte'
+        user:'support@lawtus.in',
+        pass:'kttb kbyz zbpx mklu'
     }
 })
 
@@ -233,11 +233,91 @@ app.post('/reset-pass',async(req,res)=>{
             
            
             await mailer.sendMail({
-                from: 'kithuin21@gmail.com',
-                to: 'kithuv21@gmail.com',
+                from: 'support@lawtus.in',
+                to: mailsnap.data()['email'],
                 subject: "Lawtus - Password Reset",
                 text: `Click here to reset your password: ${customLink}`,
-                html: `<p>Click <a href="${customLink}">here</a> to reset your password.</p>`,
+                html: `<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                  <meta charset="UTF-8" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                  <title>Reset Your Password</title>
+                </head>
+                <body style="margin:0; padding:0; background-color:#f4f6f8; font-family: Arial, Helvetica, sans-serif;">
+                  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:30px 0;">
+                    <tr>
+                      <td align="center">
+                        <table width="100%" max-width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:10px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+                          
+                          <!-- Header -->
+                          <tr>
+                            <td style="background:#0f172a; padding:24px; text-align:center;">
+                              <h1 style="color:#ffffff; margin:0; font-size:24px;">Lawtus</h1>
+                            </td>
+                          </tr>
+
+                          <!-- Body -->
+                          <tr>
+                            <td style="padding:32px;">
+                              <h2 style="margin-top:0; color:#0f172a;">Reset your password</h2>
+
+                              <p style="color:#475569; font-size:15px; line-height:1.6;">
+                                We received a request to reset your Lawtus account password.
+                                If you made this request, click the button below to continue.
+                              </p>
+
+                              <!-- Button -->
+                              <div style="text-align:center; margin:32px 0;">
+                                <a 
+                                  href="${customLink}"
+                                  style="
+                                    background:#2563eb;
+                                    color:#ffffff;
+                                    text-decoration:none;
+                                    padding:14px 28px;
+                                    border-radius:6px;
+                                    font-weight:600;
+                                    display:inline-block;
+                                  "
+                                >
+                                  Reset Password
+                                </a>
+                              </div>
+
+                              <p style="color:#475569; font-size:14px; line-height:1.6;">
+                                This link will expire shortly for security reasons.
+                              </p>
+
+                              <p style="color:#475569; font-size:14px; line-height:1.6;">
+                                If you didn’t request a password reset, you can safely ignore this email.
+                              </p>
+
+                              <hr style="border:none; border-top:1px solid #e5e7eb; margin:30px 0;" />
+
+                              <p style="color:#64748b; font-size:12px;">
+                                Having trouble? Copy and paste this link into your browser:
+                              </p>
+                              <p style="word-break:break-all; font-size:12px; color:#2563eb;">
+                                ${customLink}
+                              </p>
+                            </td>
+                          </tr>
+
+                          <!-- Footer -->
+                          <tr>
+                            <td style="background:#f8fafc; padding:20px; text-align:center; font-size:12px; color:#94a3b8;">
+                              © 2026 Lawtus. All rights reserved.
+                            </td>
+                          </tr>
+
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </body>
+                </html>
+                `,
             })
             
             return res.json({ success: true, message: "Recovery email sent!" });
