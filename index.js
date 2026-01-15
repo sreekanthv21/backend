@@ -231,7 +231,7 @@ app.post('/reset-pass',async(req,res)=>{
             const mode = urlObj.searchParams.get('mode');
             const customLink = `https://passwordresetpagebuild.onrender.com?mode=${mode}&oobCode=${oobCode}&user=${user}`;
             
-           
+           console.log(mailsnap.data()['email'])
             await mailer.sendMail({
                 from: 'support@lawtus.in',
                 to: mailsnap.data()['email'],
